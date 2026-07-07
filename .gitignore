@@ -1,0 +1,34 @@
+# ---- NOVA Glass · NUNCA subir datos sensibles ----
+
+# Config con secretos reales (tokens, bot tokens, IPs internas, SNMP communities)
+config.local.json
+
+# Base de datos con telemetría/historial real de la infraestructura
+*.db
+*.db-wal
+*.db-shm
+nova.db*
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Editores / SO
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Cualquier dump/backup de datos
+*.dump
+*.bak
+data/
+exports/

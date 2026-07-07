@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NOVA Glass · AI Factory NOC</title>
+<link rel="preconnect" href="">
+<style>
+:root{
+  --bg:#0a0e14; --bg2:#111722; --panel:#151c28; --panel2:#1b2432;
+  --line:#232d3d; --txt:#e6edf3; --dim:#8b98a9; --faint:#5a6675;
+  --accent:#00e5c7; --accent2:#4c8dff; --violet:#a371f7;
+  --ok:#2ec77e; --warn:#f0a020; --crit:#ff4d5e; --gpu:#76ff9e;
+  --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:14px;
+  -webkit-font-smoothing:antialiased}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+a{color:var(--accent2);text-decoration:none}
+
+/* ---- top bar ---- */
+header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;
+  padding:12px 20px;background:linear-gradient(180deg,#0d131c,#0a0e14);
+  border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:.3px}
+.logo .orb{width:26px;height:26px;border-radius:8px;
+  background:radial-gradient(circle at 30% 30%,var(--accent),var(--accent2));
+  box-shadow:0 0 16px rgba(0,229,199,.5)}
+.logo small{color:var(--dim);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tab{padding:7px 15px;border-radius:8px;color:var(--dim);cursor:pointer;font-weight:600;
+  font-size:13px;transition:.15s}
+.tab:hover{color:var(--txt);background:var(--panel)}
+.tab.active{color:var(--bg);background:var(--accent)}
+.spacer{flex:1}
+.status-pill{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:20px;
+  background:var(--panel);font-size:12px;font-weight:600}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
+.dot.off{background:var(--crit);box-shadow:0 0 8px var(--crit)}
+.clock{color:var(--dim);font-family:var(--mono);font-size:12px}
+
+main{padding:20px;max-width:1560px;margin:0 auto}
+.view{display:none}.view.active{display:block}
+
+/* ---- cards & grid ---- */
+.grid{display:grid;gap:14px}
+.g-metrics{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.g-nodes{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card h3{font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;
+  letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.big{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;
+  display:flex;align-items:baseline;gap:6px}
+.big .unit{font-size:15px;color:var(--dim);font-weight:600}
+.spark{margin-top:12px;width:100%;height:44px;display:block}
+.sub{margin-top:8px;font-size:12px;color:var(--faint);display:flex;justify-content:space-between}
+
+/* ---- node cards ---- */
+.node-card .nc-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.node-card .nc-name{font-size:16px;font-weight:700;display:flex;align-items:center;gap:9px}
+.node-card .bars{display:grid;grid-template-columns:1fr 1fr;gap:10px 18px}
+.metric-row{display:flex;flex-direction:column;gap:5px}
+.metric-row .ml{display:flex;justify-content:space-between;font-size:12px;color:var(--dim)}
+.metric-row .ml b{color:var(--txt);font-variant-numeric:tabular-nums;font-weight:700}
+.track{height:6px;border-radius:4px;background:var(--bg2);overflow:hidden}
+.fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* ---- tables ---- */
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;
+  letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
+td{padding:9px 10px;border-bottom:1px solid var(--bg2);font-variant-numeric:tabular-nums}
+tr:hover td{background:var(--panel2)}
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
+.b-ok{background:rgba(46,199,126,.15);color:var(--ok)}
+.b-warn{background:rgba(240,160,32,.15);color:var(--warn)}
+.b-crit{background:rgba(255,77,94,.15);color:var(--crit)}
+.b-info{background:rgba(76,141,255,.15);color:var(--accent2)}
+
+/* ---- insights ---- */
+.insight-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.insight-card{cursor:pointer;transition:.15s;border:1px solid var(--line)}
+.insight-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.insight-card .ic-ico{font-size:26px;margin-bottom:8px}
+.insight-card .ic-t{font-weight:700;font-size:15px;margin-bottom:4px}
+.insight-card .ic-d{font-size:12px;color:var(--dim);line-height:1.5}
+#report{margin-top:18px;background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;padding:22px;min-height:80px;line-height:1.6}
+#report h1,#report h2,#report h3{color:var(--accent);margin:14px 0 8px;font-size:16px}
+#report h1{font-size:19px}
+#report ul{margin:8px 0 8px 20px}#report li{margin:4px 0}
+#report code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px}
+#report strong{color:var(--txt)}
+.btn{padding:8px 16px;border-radius:9px;border:1px solid var(--accent);background:transparent;
+  color:var(--accent);font-weight:700;cursor:pointer;font-size:13px;transition:.15s}
+.btn:hover{background:var(--accent);color:var(--bg)}
+.btn:disabled{opacity:.4;cursor:wait}
+.muted{color:var(--faint);font-size:12px}
+.sec-title{font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;
+  letter-spacing:.6px;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+.sec-title::before{content:"";width:3px;height:14px;background:var(--accent);border-radius:2px}
+.chip{font-size:11px;padding:2px 8px;border-radius:6px;background:var(--bg2);color:var(--dim);font-family:var(--mono)}
+.flash{animation:flash .6s ease}
+@keyframes flash{0%{background:rgba(0,229,199,.15)}100%{background:transparent}}
+</style>
+</head>
+<body>
+<h2 class="sr-only">NOVA Glass: panel único de monitoreo para AI factory con CPU, GPU, red, almacenamiento, alertas y análisis con IA.</h2>
+
+<header>
+  <div class="logo"><div class="orb"></div>
+    <div>NOVA&nbsp;Glass<br><small>AI Factory · Single Pane of Glass</small></div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <div class="tab active" data-v="overview">Overview</div>
+    <div class="tab" data-v="nodes">Nodos</div>
+    <div class="tab" data-v="network">Red</div>
+    <div class="tab" data-v="storage">Almacenamiento</div>
+    <div class="tab" data-v="noc">NOC</div>
+    <div class="tab" data-v="updates">Updates</div>
+    <div class="tab" data-v="alerts">Alertas <span id="alertBadge" class="badge b-crit" style="display:none">0</span></div>
+    <div class="tab" data-v="insights">✨ Insights</div>
+  </nav>
+  <div class="spacer"></div>
+  <div class="status-pill"><span class="dot" id="hubDot"></span><span id="hubTxt">conectando…</span></div>
+  <div class="clock" id="clock"></div>
+</header>
+
+<main>
+  <!-- OVERVIEW -->
+  <section class="view active" id="v-overview">
+    <div class="sec-title">Fleet en tiempo real</div>
+    <div class="grid g-metrics" id="fleetMetrics"></div>
+    <div class="sec-title">Nodos</div>
+    <div class="grid g-nodes" id="nodeCards"></div>
+  </section>
+
+  <!-- NODES detail -->
+  <section class="view" id="v-nodes">
+    <div class="sec-title">Detalle por nodo</div>
+    <div id="nodeDetail" class="grid" style="grid-template-columns:1fr"></div>
+  </section>
+
+  <!-- NETWORK -->
+  <section class="view" id="v-network">
+    <div class="sec-title">Interfaces de red · throughput por nodo</div>
+    <div class="grid g-nodes" id="netCards"></div>
+  </section>
+
+  <!-- STORAGE -->
+  <section class="view" id="v-storage">
+    <div class="sec-title">Filesystems y uso por usuario</div>
+    <div id="storageWrap" class="grid" style="grid-template-columns:1fr"></div>
+  </section>
+
+  <!-- NOC -->
+  <section class="view" id="v-noc">
+    <div class="sec-title">Dispositivos NOC · ping / TCP / SNMP</div>
+    <div class="card"><table id="devTable"><thead><tr>
+      <th>Estado</th><th>Nombre</th><th>Host</th><th>Tipo</th><th>Latencia</th><th>Detalle</th><th>Visto</th>
+    </tr></thead><tbody></tbody></table>
+    <p class="muted" style="margin-top:12px">Añade equipos en <code>config.json → devices[]</code> (kind: ping·tcp·http·snmp). Reinicia el hub para aplicar.</p></div>
+  </section>
+
+  <!-- UPDATES / CVE inventario propio -->
+  <section class="view" id="v-updates">
+    <div class="sec-title">Actualizaciones pendientes · paquetes · seguridad · firmware</div>
+    <div id="updatesWrap" class="grid" style="grid-template-columns:1fr"></div>
+  </section>
+
+  <!-- ALERTS -->
+  <section class="view" id="v-alerts">
+    <div class="sec-title">Alertas · umbral + anomalía (z-score)</div>
+    <div class="card"><table id="alertTable"><thead><tr>
+      <th>Sev</th><th>Estado</th><th>Nodo</th><th>Título</th><th>Mensaje</th><th>Hora</th>
+    </tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <!-- INSIGHTS -->
+  <section class="view" id="v-insights">
+    <div class="sec-title">✨ NOVA Insights · análisis con la IA de la factory</div>
+    <div class="grid insight-grid" id="insightCards"></div>
+    <div id="report"><p class="muted">Elige un análisis para que la IA investigue la telemetría de la última hora y genere un reporte accionable.</p></div>
+  </section>
+</main>
+
+<script src="/static/vendor/marked.min.js"></script>
+<script src="/static/app.js"></script>
+</body>
+</html>

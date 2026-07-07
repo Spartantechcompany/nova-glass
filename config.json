@@ -1,0 +1,40 @@
+{
+  "_comment": "NOVA Glass config PÚBLICO (sin secretos). Copia a config.local.json para sobreescribir con tokens/IPs reales — ese archivo está en .gitignore.",
+  "node_name": null,
+  "hub_url": "http://127.0.0.1:8082",
+  "ingest_token": "",
+  "db_file": "nova.db",
+
+  "fast_interval": 5,
+  "slow_interval": 300,
+  "device_interval": 30,
+  "user_storage_root": "/home",
+
+  "retention_raw_hours": 48,
+  "retention_rollup_days": 90,
+
+  "thresholds": {
+    "cpu_pct": 92,
+    "mem_pct": 92,
+    "swap_pct": 60,
+    "disk_pct": 85,
+    "gpu_temp": 88,
+    "anomaly_z": 4.0,
+    "sustained_samples": 4
+  },
+
+  "llm": {
+    "base_url": "http://127.0.0.1:8003/v1",
+    "model": "deepseek-v4-flash",
+    "api_key": "none",
+    "temperature": 0.3,
+    "timeout": 180
+  },
+
+  "webhooks": [],
+
+  "devices": [
+    {"name": "gateway",     "host": "10.0.0.1",  "kind": "ping"},
+    {"name": "switch-core", "host": "10.0.0.2",  "kind": "snmp", "community": "public"}
+  ]
+}

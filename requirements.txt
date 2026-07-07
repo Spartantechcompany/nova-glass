@@ -1,0 +1,5 @@
+fastapi>=0.110
+uvicorn[standard]>=0.29
+psutil>=5.9
+# opcional para NOC SNMP (si no está, los devices snmp caen a ping automáticamente):
+# pysnmp>=4.4

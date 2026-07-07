@@ -1,0 +1,17 @@
+[Unit]
+Description=NOVA Glass Collector (agente de telemetría por nodo)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=%i
+WorkingDirectory=/home/%i/nova-glass
+# NOVA_HUB apunta al hub; NOVA_NODE nombra este nodo; NOVA_TOKEN debe coincidir con el hub
+Environment=NOVA_HUB=http://127.0.0.1:8082
+ExecStart=/usr/bin/python3 nova_collector.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
