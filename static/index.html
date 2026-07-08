@@ -4,51 +4,71 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>NOVA Glass · AI Factory NOC</title>
-<link rel="preconnect" href="">
 <style>
 :root{
-  --bg:#0a0e14; --bg2:#111722; --panel:#151c28; --panel2:#1b2432;
-  --line:#232d3d; --txt:#e6edf3; --dim:#8b98a9; --faint:#5a6675;
+  --bg:#070a10; --bg2:#0d1320; --panel:rgba(21,28,40,.72); --panel2:rgba(27,36,50,.8);
+  --line:rgba(90,120,160,.16); --line2:rgba(0,229,199,.28);
+  --txt:#e6edf3; --dim:#8b98a9; --faint:#5a6675;
   --accent:#00e5c7; --accent2:#4c8dff; --violet:#a371f7;
-  --ok:#2ec77e; --warn:#f0a020; --crit:#ff4d5e; --gpu:#76ff9e;
+  --ok:#2ec77e; --warn:#f0a020; --crit:#ff4d5e;
+  --glow:0 0 24px rgba(0,229,199,.12);
   --font:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
   --mono:ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+html{scrollbar-color:#2a3648 transparent}
 body{background:var(--bg);color:var(--txt);font-family:var(--font);font-size:14px;
-  -webkit-font-smoothing:antialiased}
+  -webkit-font-smoothing:antialiased;min-height:100vh;
+  background-image:
+    radial-gradient(1100px 500px at 85% -10%, rgba(76,141,255,.10), transparent 60%),
+    radial-gradient(900px 480px at 0% 0%, rgba(0,229,199,.07), transparent 55%),
+    radial-gradient(700px 700px at 50% 120%, rgba(163,113,247,.06), transparent 60%);
+  background-attachment:fixed}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 a{color:var(--accent2);text-decoration:none}
 
 /* ---- top bar ---- */
 header{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;
-  padding:12px 20px;background:linear-gradient(180deg,#0d131c,#0a0e14);
-  border-bottom:1px solid var(--line)}
+  padding:12px 20px;background:rgba(10,14,20,.75);backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
 .logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:.3px}
 .logo .orb{width:26px;height:26px;border-radius:8px;
   background:radial-gradient(circle at 30% 30%,var(--accent),var(--accent2));
-  box-shadow:0 0 16px rgba(0,229,199,.5)}
+  box-shadow:0 0 16px rgba(0,229,199,.5);animation:orbidle 4s ease-in-out infinite}
+@keyframes orbidle{0%,100%{box-shadow:0 0 12px rgba(0,229,199,.35)}
+  50%{box-shadow:0 0 22px rgba(0,229,199,.65)}}
+.orb.beat{animation:orbbeat .7s ease}
+@keyframes orbbeat{0%{transform:scale(1)}25%{transform:scale(1.28);box-shadow:0 0 34px rgba(0,229,199,.95)}
+  100%{transform:scale(1)}}
 .logo small{color:var(--dim);font-weight:500;font-size:11px;letter-spacing:1px;text-transform:uppercase}
-.tabs{display:flex;gap:4px;margin-left:8px}
-.tab{padding:7px 15px;border-radius:8px;color:var(--dim);cursor:pointer;font-weight:600;
-  font-size:13px;transition:.15s}
+.tabs{display:flex;gap:4px;margin-left:8px;flex-wrap:wrap}
+.tab{padding:7px 15px;border-radius:9px;color:var(--dim);cursor:pointer;font-weight:600;
+  font-size:13px;transition:.18s;border:1px solid transparent}
 .tab:hover{color:var(--txt);background:var(--panel)}
-.tab.active{color:var(--bg);background:var(--accent)}
+.tab.active{color:var(--bg);background:linear-gradient(135deg,var(--accent),#31d0ff);
+  box-shadow:0 0 18px rgba(0,229,199,.35)}
 .spacer{flex:1}
 .status-pill{display:flex;align-items:center;gap:8px;padding:6px 12px;border-radius:20px;
-  background:var(--panel);font-size:12px;font-weight:600}
+  background:var(--panel);border:1px solid var(--line);font-size:12px;font-weight:600}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok)}
 .dot.off{background:var(--crit);box-shadow:0 0 8px var(--crit)}
 .clock{color:var(--dim);font-family:var(--mono);font-size:12px}
 
 main{padding:20px;max-width:1560px;margin:0 auto}
-.view{display:none}.view.active{display:block}
+.view{display:none}.view.active{display:block;animation:vin .25s ease}
+@keyframes vin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* ---- cards & grid ---- */
+/* ---- glass cards & grid ---- */
 .grid{display:grid;gap:14px}
 .g-metrics{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
 .g-nodes{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 8px 28px rgba(0,0,0,.28);transition:border-color .25s, box-shadow .25s}
+.card:hover{border-color:rgba(90,120,160,.3)}
+.card.beat{animation:cardbeat .8s ease}
+@keyframes cardbeat{0%{border-color:var(--line2);box-shadow:var(--glow),0 8px 28px rgba(0,0,0,.28)}
+  100%{border-color:var(--line)}}
 .card h3{font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;
   letter-spacing:.6px;margin-bottom:10px;display:flex;align-items:center;gap:7px}
 .big{font-size:40px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1;
@@ -64,14 +84,29 @@ main{padding:20px;max-width:1560px;margin:0 auto}
 .metric-row{display:flex;flex-direction:column;gap:5px}
 .metric-row .ml{display:flex;justify-content:space-between;font-size:12px;color:var(--dim)}
 .metric-row .ml b{color:var(--txt);font-variant-numeric:tabular-nums;font-weight:700}
-.track{height:6px;border-radius:4px;background:var(--bg2);overflow:hidden}
+.track{height:6px;border-radius:4px;background:rgba(13,19,32,.9);overflow:hidden}
 .fill{height:100%;border-radius:4px;transition:width .5s ease}
+
+/* ---- interactive charts (Nodos) ---- */
+.chart{position:relative;width:100%;height:120px;margin-top:8px}
+.chart svg{display:block;width:100%;height:100%}
+.chart .xhair{position:absolute;top:0;bottom:0;width:1px;background:rgba(230,237,243,.35);
+  pointer-events:none;display:none}
+.chart .tip{position:absolute;pointer-events:none;display:none;z-index:5;
+  background:rgba(13,19,32,.95);border:1px solid var(--line2);border-radius:8px;
+  padding:6px 9px;font-size:11px;font-family:var(--mono);white-space:nowrap;
+  box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.range-bar{display:flex;gap:6px;align-items:center;margin:2px 0 14px}
+.range-btn{padding:5px 12px;border-radius:8px;border:1px solid var(--line);cursor:pointer;
+  background:transparent;color:var(--dim);font-weight:700;font-size:12px;transition:.15s}
+.range-btn:hover{color:var(--txt);border-color:var(--line2)}
+.range-btn.active{color:var(--bg);background:var(--accent);border-color:var(--accent)}
 
 /* ---- tables ---- */
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{text-align:left;color:var(--faint);font-weight:600;font-size:11px;text-transform:uppercase;
   letter-spacing:.5px;padding:8px 10px;border-bottom:1px solid var(--line)}
-td{padding:9px 10px;border-bottom:1px solid var(--bg2);font-variant-numeric:tabular-nums}
+td{padding:9px 10px;border-bottom:1px solid rgba(13,19,32,.9);font-variant-numeric:tabular-nums}
 tr:hover td{background:var(--panel2)}
 .badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700}
 .b-ok{background:rgba(46,199,126,.15);color:var(--ok)}
@@ -79,38 +114,79 @@ tr:hover td{background:var(--panel2)}
 .b-crit{background:rgba(255,77,94,.15);color:var(--crit)}
 .b-info{background:rgba(76,141,255,.15);color:var(--accent2)}
 
-/* ---- insights ---- */
+/* ---- insights / agents ---- */
 .insight-grid{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
-.insight-card{cursor:pointer;transition:.15s;border:1px solid var(--line)}
-.insight-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.insight-card{cursor:pointer;transition:.18s;border:1px solid var(--line)}
+.insight-card:hover{border-color:var(--accent);transform:translateY(-2px);box-shadow:var(--glow)}
 .insight-card .ic-ico{font-size:26px;margin-bottom:8px}
 .insight-card .ic-t{font-weight:700;font-size:15px;margin-bottom:4px}
 .insight-card .ic-d{font-size:12px;color:var(--dim);line-height:1.5}
-#report{margin-top:18px;background:var(--panel);border:1px solid var(--line);
-  border-radius:14px;padding:22px;min-height:80px;line-height:1.6}
-#report h1,#report h2,#report h3{color:var(--accent);margin:14px 0 8px;font-size:16px}
-#report h1{font-size:19px}
-#report ul{margin:8px 0 8px 20px}#report li{margin:4px 0}
-#report code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px}
-#report strong{color:var(--txt)}
+.report-box{margin-top:18px;background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:22px;min-height:80px;line-height:1.6;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.report-box h1,.report-box h2,.report-box h3{color:var(--accent);margin:14px 0 8px;font-size:16px}
+.report-box h1{font-size:19px}
+.report-box ul{margin:8px 0 8px 20px}.report-box li{margin:4px 0}
+.report-box code{background:var(--bg2);padding:1px 5px;border-radius:4px;font-family:var(--mono);font-size:12px}
+.report-box strong{color:var(--txt)}
 .btn{padding:8px 16px;border-radius:9px;border:1px solid var(--accent);background:transparent;
   color:var(--accent);font-weight:700;cursor:pointer;font-size:13px;transition:.15s}
-.btn:hover{background:var(--accent);color:var(--bg)}
+.btn:hover{background:var(--accent);color:var(--bg);box-shadow:0 0 16px rgba(0,229,199,.4)}
 .btn:disabled{opacity:.4;cursor:wait}
+.btn.small{padding:4px 10px;font-size:11px;border-radius:7px}
+.btn.danger{border-color:var(--crit);color:var(--crit)}
+.btn.danger:hover{background:var(--crit);color:var(--bg);box-shadow:none}
+.btn.ghost{border-color:var(--line);color:var(--dim)}
+.btn.ghost:hover{background:var(--panel2);color:var(--txt);box-shadow:none}
 .muted{color:var(--faint);font-size:12px}
 .sec-title{font-size:13px;font-weight:700;color:var(--dim);text-transform:uppercase;
   letter-spacing:.6px;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
 .sec-title::before{content:"";width:3px;height:14px;background:var(--accent);border-radius:2px}
+.sec-title .right{margin-left:auto;display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0}
 .chip{font-size:11px;padding:2px 8px;border-radius:6px;background:var(--bg2);color:var(--dim);font-family:var(--mono)}
+
+/* ---- forms / modal ---- */
+input,select,textarea{background:rgba(13,19,32,.85);border:1px solid var(--line);border-radius:9px;
+  color:var(--txt);padding:8px 11px;font-family:var(--font);font-size:13px;outline:none;transition:.15s}
+input:focus,select:focus,textarea:focus{border-color:var(--accent)}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.form-row label{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--dim);
+  font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.modal-bg{position:fixed;inset:0;background:rgba(4,7,12,.7);backdrop-filter:blur(6px);
+  z-index:50;display:none;align-items:center;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--panel2);border:1px solid var(--line2);border-radius:18px;padding:26px;
+  max-width:640px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.modal h2{font-size:17px;margin-bottom:14px}
+pre.cmd{background:#060a12;border:1px solid var(--line);border-radius:10px;padding:14px;
+  font-family:var(--mono);font-size:12px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;color:#9fe8dc}
+
+/* ---- logs ---- */
+.logbox{background:#060a12;border:1px solid var(--line);border-radius:12px;padding:14px;
+  font-family:var(--mono);font-size:11.5px;line-height:1.7;max-height:340px;overflow:auto;
+  white-space:pre-wrap;color:#c6d2e0}
+.logbox .err{color:var(--crit)}
+
+/* ---- reasoning stream ---- */
+.stream{background:#060a12;border:1px solid var(--line);border-radius:12px;padding:16px;
+  font-size:12.5px;max-height:420px;overflow:auto;line-height:1.65}
+.stream .st{display:flex;gap:9px;margin-bottom:9px;animation:vin .3s ease}
+.stream .st .ic{flex:none}
+.stream .thought{color:var(--dim);font-style:italic}
+.stream .tool{color:var(--accent2);font-family:var(--mono)}
+.stream .obs{color:var(--faint);font-family:var(--mono);font-size:11px}
+.stream .err{color:var(--crit)}
+.pulse-dots::after{content:"";animation:dots 1.2s steps(4) infinite}
+@keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 .flash{animation:flash .6s ease}
 @keyframes flash{0%{background:rgba(0,229,199,.15)}100%{background:transparent}}
 </style>
 </head>
 <body>
-<h2 class="sr-only">NOVA Glass: panel único de monitoreo para AI factory con CPU, GPU, red, almacenamiento, alertas y análisis con IA.</h2>
+<h2 class="sr-only">NOVA Glass: panel único de monitoreo para AI factory con CPU, GPU, red, almacenamiento, alertas, agentes autónomos y análisis con IA.</h2>
 
 <header>
-  <div class="logo"><div class="orb"></div>
+  <div class="logo"><div class="orb" id="orb"></div>
     <div>NOVA&nbsp;Glass<br><small>AI Factory · Single Pane of Glass</small></div>
   </div>
   <nav class="tabs" id="tabs">
@@ -120,7 +196,9 @@ tr:hover td{background:var(--panel2)}
     <div class="tab" data-v="storage">Almacenamiento</div>
     <div class="tab" data-v="noc">NOC</div>
     <div class="tab" data-v="updates">Updates</div>
+    <div class="tab" data-v="logs">Logs</div>
     <div class="tab" data-v="alerts">Alertas <span id="alertBadge" class="badge b-crit" style="display:none">0</span></div>
+    <div class="tab" data-v="agents">🤖 Agentes</div>
     <div class="tab" data-v="insights">✨ Insights</div>
   </nav>
   <div class="spacer"></div>
@@ -131,7 +209,10 @@ tr:hover td{background:var(--panel2)}
 <main>
   <!-- OVERVIEW -->
   <section class="view active" id="v-overview">
-    <div class="sec-title">Fleet en tiempo real</div>
+    <div class="sec-title">Fleet en tiempo real
+      <span class="right"><span class="muted" id="lastBeat"></span>
+        <button class="btn small" id="addNodeBtn">＋ Agregar nodo</button></span>
+    </div>
     <div class="grid g-metrics" id="fleetMetrics"></div>
     <div class="sec-title">Nodos</div>
     <div class="grid g-nodes" id="nodeCards"></div>
@@ -139,13 +220,16 @@ tr:hover td{background:var(--panel2)}
 
   <!-- NODES detail -->
   <section class="view" id="v-nodes">
-    <div class="sec-title">Detalle por nodo</div>
+    <div class="sec-title">Detalle por nodo
+      <span class="right muted">pasa el cursor sobre una gráfica para ver hora y valor exactos</span>
+    </div>
+    <div class="range-bar" id="rangeBar"></div>
     <div id="nodeDetail" class="grid" style="grid-template-columns:1fr"></div>
   </section>
 
   <!-- NETWORK -->
   <section class="view" id="v-network">
-    <div class="sec-title">Interfaces de red · throughput por nodo</div>
+    <div class="sec-title">Interfaces de red · throughput por nodo (Mbps)</div>
     <div class="grid g-nodes" id="netCards"></div>
   </section>
 
@@ -157,11 +241,24 @@ tr:hover td{background:var(--panel2)}
 
   <!-- NOC -->
   <section class="view" id="v-noc">
-    <div class="sec-title">Dispositivos NOC · ping / TCP / SNMP</div>
+    <div class="sec-title">Dispositivos NOC · ping / TCP / HTTP / SNMP</div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Registrar dispositivo (en caliente, sin reiniciar el hub)</h3>
+      <div class="form-row">
+        <label>Nombre<input id="devName" placeholder="switch-core" style="width:150px"></label>
+        <label>Host / IP<input id="devHost" placeholder="192.168.0.2" style="width:140px"></label>
+        <label>Tipo<select id="devKind">
+          <option value="ping">ping</option><option value="tcp">tcp</option>
+          <option value="http">http</option><option value="snmp">snmp</option></select></label>
+        <label>Puerto / URL / community<input id="devExtra" placeholder="22 · http://… · public" style="width:180px"></label>
+        <button class="btn" id="devAdd">Agregar</button>
+      </div>
+      <p class="muted" id="devMsg" style="margin-top:8px"></p>
+    </div>
     <div class="card"><table id="devTable"><thead><tr>
-      <th>Estado</th><th>Nombre</th><th>Host</th><th>Tipo</th><th>Latencia</th><th>Detalle</th><th>Visto</th>
+      <th>Estado</th><th>Nombre</th><th>Host</th><th>Tipo</th><th>Latencia</th><th>Detalle</th><th>Visto</th><th></th>
     </tr></thead><tbody></tbody></table>
-    <p class="muted" style="margin-top:12px">Añade equipos en <code>config.json → devices[]</code> (kind: ping·tcp·http·snmp). Reinicia el hub para aplicar.</p></div>
+    <p class="muted" style="margin-top:12px">Los dispositivos de <code>config.json → devices[]</code> siguen activos; los agregados aquí se guardan en la base y sobreviven reinicios. Nota: si el hub corre en un contenedor, el ping ICMP requiere <code>--cap-add=NET_RAW</code> (o usa tipo <code>tcp</code>/<code>http</code>).</p></div>
   </section>
 
   <!-- UPDATES / CVE inventario propio -->
@@ -170,21 +267,78 @@ tr:hover td{background:var(--panel2)}
     <div id="updatesWrap" class="grid" style="grid-template-columns:1fr"></div>
   </section>
 
+  <!-- LOGS -->
+  <section class="view" id="v-logs">
+    <div class="sec-title">Logs · errores de journal por nodo (última hora)</div>
+    <div id="logsWrap" class="grid" style="grid-template-columns:1fr"></div>
+  </section>
+
   <!-- ALERTS -->
   <section class="view" id="v-alerts">
     <div class="sec-title">Alertas · umbral + anomalía (z-score)</div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Umbrales (override en runtime · vacío = usar config.json)</h3>
+      <div class="form-row" id="thForm"></div>
+      <p class="muted" id="thMsg" style="margin-top:8px"></p>
+    </div>
     <div class="card"><table id="alertTable"><thead><tr>
-      <th>Sev</th><th>Estado</th><th>Nodo</th><th>Título</th><th>Mensaje</th><th>Hora</th>
+      <th>Sev</th><th>Estado</th><th>Nodo</th><th>Título</th><th>Mensaje</th><th>Hora</th><th></th>
     </tr></thead><tbody></tbody></table></div>
+  </section>
+
+  <!-- AGENTS -->
+  <section class="view" id="v-agents">
+    <div class="sec-title">🤖 NOVA Agents · analistas autónomos sobre el LLM de la factory</div>
+    <div class="card" style="margin-bottom:14px">
+      <h3>Crear agente</h3>
+      <div class="form-row">
+        <label>Nombre<input id="agName" placeholder="Vigía GPU" style="width:170px"></label>
+        <label style="flex:1;min-width:280px">Misión (lenguaje natural)
+          <input id="agGoal" placeholder="Vigila la temperatura y utilización de las GPU; si detectas degradación, correlaciona con contenedores y red"></label>
+        <button class="btn" id="agCreate">Crear</button>
+      </div>
+      <p class="muted" style="margin-top:8px">El agente razona en un bucle pensamiento → herramienta → observación usando la telemetría real
+        (series, alertas, meta, dispositivos) y el LLM local de la factory. El razonamiento se transmite en vivo.</p>
+    </div>
+    <div class="grid g-nodes" id="agentList"></div>
+    <div class="sec-title" id="streamTitle" style="display:none">Reasoning Stream</div>
+    <div class="stream" id="agentStream" style="display:none"></div>
+    <div class="report-box" id="agentReport" style="display:none"></div>
   </section>
 
   <!-- INSIGHTS -->
   <section class="view" id="v-insights">
-    <div class="sec-title">✨ NOVA Insights · análisis con la IA de la factory</div>
+    <div class="sec-title">✨ NOVA Insights · análisis con la IA de la factory
+      <span class="right">
+        <span class="muted" id="llmStatus"></span>
+        <button class="btn small" id="llmPing">⚡ Probar LLM</button>
+      </span>
+    </div>
     <div class="grid insight-grid" id="insightCards"></div>
-    <div id="report"><p class="muted">Elige un análisis para que la IA investigue la telemetría de la última hora y genere un reporte accionable.</p></div>
+    <div class="report-box" id="report"><p class="muted">Elige un análisis para que la IA investigue la telemetría de la última hora y genere un reporte accionable.</p></div>
+    <div class="sec-title">Reportes recientes</div>
+    <div id="insightHistory" class="grid" style="grid-template-columns:1fr;gap:8px"></div>
   </section>
 </main>
+
+<!-- add-node modal -->
+<div class="modal-bg" id="nodeModal">
+  <div class="modal">
+    <h2>＋ Agregar un nodo a la fleet</h2>
+    <p class="muted" style="margin-bottom:12px">Cada nodo corre su propio agente colector. En el equipo nuevo ejecuta:</p>
+    <div class="form-row" style="margin-bottom:12px">
+      <label>Nombre del nodo<input id="nmName" placeholder="dgx-spark03" style="width:180px"></label>
+      <label>Token (si el hub lo exige)<input id="nmToken" placeholder="opcional" style="width:160px"></label>
+    </div>
+    <pre class="cmd" id="nmCmd"></pre>
+    <p class="muted" style="margin:10px 0">Para dejarlo persistente usa la unidad de <code>systemd/</code> del repo
+      (<code>nova-collector.service</code>). El nodo aparecerá aquí en cuanto llegue su primera métrica.</p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn ghost" id="nmCopy">Copiar comando</button>
+      <button class="btn" id="nmClose">Listo</button>
+    </div>
+  </div>
+</div>
 
 <script src="/static/vendor/marked.min.js"></script>
 <script src="/static/app.js"></script>

@@ -158,6 +158,14 @@ def slow_sample():
             pass
     meta["mounts"] = mounts
 
+    # link-layer info per interface (speed in Mb/s, up/down, mtu)
+    ifinfo = {}
+    for name, st in psutil.net_if_stats().items():
+        if name == "lo" or name.startswith(("veth", "br-", "docker")):
+            continue
+        ifinfo[name] = {"speed_mbps": st.speed, "up": bool(st.isup), "mtu": st.mtu}
+    meta["ifaces"] = ifinfo
+
     users = []
     out = sh(f"du -s --block-size=1G {HOME_ROOT}/* 2>/dev/null", timeout=120)
     for line in out.splitlines():
@@ -194,8 +202,20 @@ def slow_sample():
     # CVE del inventario propio: parches de seguridad pendientes en apt
     # (usa el canal -security; NO escanea red ni hace pentest)
     sec = sh("apt list --upgradable 2>/dev/null | grep -i security", timeout=30)
-    sec_pkgs = [l.split("/")[0] for l in sec.splitlines() if "/" in l]
-    meta["security_updates"] = {"count": len(sec_pkgs), "packages": sec_pkgs[:30]}
+    sec_pkgs, sec_detail = [], []
+    for l in sec.splitlines():
+        if "/" not in l:
+            continue
+        # formato apt: pkg/suite new_ver arch [upgradable from: old_ver]
+        pkg = l.split("/")[0]
+        sec_pkgs.append(pkg)
+        m2 = re.match(r"^(\S+)/(\S+)\s+(\S+)\s+\S+(?:\s+\[upgradable from:\s+(\S+?)\])?", l)
+        if m2:
+            sec_detail.append({"pkg": m2.group(1), "suite": m2.group(2),
+                               "new": m2.group(3), "old": m2.group(4) or "?"})
+    meta["security_updates"] = {"count": len(sec_pkgs), "packages": sec_pkgs[:30],
+                                "detail": sec_detail[:30],
+                                "checked": time.strftime("%Y-%m-%d %H:%M:%S")}
 
     meta["uptime_s"] = int(time.time() - psutil.boot_time())
     meta["kernel"] = sh("uname -r", timeout=5)
