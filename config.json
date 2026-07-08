@@ -34,7 +34,7 @@
   "webhooks": [],
 
   "devices": [
-    {"name": "gateway",     "host": "10.0.0.1",  "kind": "ping"},
-    {"name": "switch-core", "host": "10.0.0.2",  "kind": "snmp", "community": "public"}
+    {"name": "gateway",     "host": "192.168.1.1",  "kind": "ping"},
+    {"name": "switch-core", "host": "192.168.1.2",  "kind": "snmp", "community": "public"}
   ]
 }

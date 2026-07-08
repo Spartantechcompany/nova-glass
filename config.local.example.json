@@ -8,10 +8,10 @@
   ],
 
   "devices": [
-    {"name": "gateway",     "host": "192.168.0.1",   "kind": "ping"},
-    {"name": "dream-machine","host": "192.168.0.1",  "kind": "http", "url": "https://192.168.0.1"},
-    {"name": "sw-poe-1",    "host": "192.168.0.2",   "kind": "snmp", "community": "public"},
-    {"name": "spark02",     "host": "192.168.0.210", "kind": "tcp",  "port": 22},
-    {"name": "deepseek-api","host": "192.168.0.200", "kind": "http", "url": "http://192.168.0.200:8003/v1/models"}
+    {"name": "gateway",     "host": "10.0.0.1",   "kind": "ping"},
+    {"name": "dream-machine","host": "10.0.0.1",  "kind": "http", "url": "https://10.0.0.1"},
+    {"name": "sw-poe-1",    "host": "10.0.0.2",   "kind": "snmp", "community": "public"},
+    {"name": "worker-01",   "host": "10.0.0.10",  "kind": "tcp",  "port": 22},
+    {"name": "llm-api",     "host": "10.0.0.20",  "kind": "http", "url": "http://10.0.0.20:8000/v1/models"}
   ]
 }

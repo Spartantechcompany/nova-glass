@@ -1,7 +1,7 @@
 # ---- NOVA Glass · NUNCA subir datos sensibles ----
 
 # Config con secretos reales (tokens, bot tokens, IPs internas, SNMP communities)
-config.local.json
+config.local.*.json
 
 # Base de datos con telemetría/historial real de la infraestructura
 *.db
