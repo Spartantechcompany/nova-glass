@@ -1,5 +1,6 @@
 {
   "_comment": "EJEMPLO. Copia a config.local.json y pon tus valores reales. config.local.json NUNCA se sube a git.",
+  "db_file": "data/nova.db",
   "ingest_token": "cambia-esto-por-un-token-largo-aleatorio",
 
   "webhooks": [

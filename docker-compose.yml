@@ -1,0 +1,18 @@
+services:
+  nova-hub:
+    build: .
+    container_name: nova-hub
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data:/app/data
+      - ./config.local.json:/app/config.local.json:ro
+    environment:
+      - TZ=America/Mexico_City
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8080/api/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

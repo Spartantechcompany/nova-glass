@@ -3,7 +3,7 @@
   "node_name": null,
   "hub_url": "http://127.0.0.1:8080",
   "ingest_token": "",
-  "db_file": "nova.db",
+  "db_file": "data/nova.db",
 
   "fast_interval": 5,
   "slow_interval": 300,

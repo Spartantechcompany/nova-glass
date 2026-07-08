@@ -8,7 +8,7 @@ Type=simple
 # Ajusta User y WorkingDirectory a tu instalación
 User=%i
 WorkingDirectory=/home/%i/nova-glass
-ExecStart=/usr/bin/python3 -m uvicorn nova_server:app --host 0.0.0.0 --port 8082
+ExecStart=/usr/bin/python3 -m uvicorn nova_server:app --host 0.0.0.0 --port 8080
 Restart=always
 RestartSec=5
 
