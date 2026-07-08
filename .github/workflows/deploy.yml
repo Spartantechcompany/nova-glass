@@ -1,0 +1,57 @@
+name: Deploy NOVA Glass
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:      # manual trigger desde la UI de GitHub
+
+jobs:
+  deploy:
+    runs-on: [self-hosted, spark01]
+    concurrency: deploy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync code to deployment directory
+        run: |
+          rsync -av --delete --exclude='.git/' --exclude='config.local.*' \
+            --exclude='nova.db*' --exclude='*.log' --exclude='__pycache__/' \
+            $GITHUB_WORKSPACE/ /home/nvidia/nova-glass/
+
+      - name: Restart NOVA Glass hub
+        run: |
+          # Buscar PID del hub actual y reiniciar
+          PID=$(pgrep -f "uvicorn nova_server:app" 2>/dev/null || true)
+          if [ -n "$PID" ]; then
+            echo "Stopping hub (PID=$PID)..."
+            kill $PID
+            sleep 2
+          fi
+          cd /home/nvidia/nova-glass
+          nohup /usr/bin/python3 -m uvicorn nova_server:app \
+            --host 0.0.0.0 --port 8080 >> hub.log 2>&1 &
+          echo "Hub started"
+          sleep 2
+
+      - name: Restart NOVA Glass collector (spark01)
+        run: |
+          PID=$(pgrep -f "nova_collector.py" | head -1 2>/dev/null || true)
+          if [ -n "$PID" ]; then
+            echo "Stopping collector (PID=$PID)..."
+            kill $PID
+            sleep 1
+          fi
+          cd /home/nvidia/nova-glass
+          nohup python3 nova_collector.py >> collector.log 2>&1 &
+          echo "Collector started"
+
+      - name: Verify deployment
+        run: |
+          sleep 3
+          echo "=== Health check ==="
+          curl -sf http://127.0.0.1:8080/api/health || echo "WARNING: health check failed"
+          echo ""
+          echo "=== Services ==="
+          pgrep -af "uvicorn|nova_collector" || echo "WARNING: services not running"
