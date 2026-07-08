@@ -1,6 +1,6 @@
 services:
   nova-hub:
-    build: .
+    image: nova-glass-nova-hub:latest
     container_name: nova-hub
     restart: always
     ports:
