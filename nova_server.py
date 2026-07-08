@@ -8,7 +8,7 @@ Single pane of glass for an AI factory:
   * NOC device monitor (ping / tcp, SNMP-ready)
   * AI Insights powered by the factory's own LLM (OpenAI-compatible endpoint)
 
-Run:  uvicorn nova_server:app --host 0.0.0.0 --port 8082
+Run:  uvicorn nova_server:app --host 0.0.0.0 --port 8080
 """
 import asyncio
 import json

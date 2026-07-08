@@ -37,7 +37,7 @@ def load_cfg():
 
 
 CFG = load_cfg()
-HUB = os.environ.get("NOVA_HUB", CFG.get("hub_url", "http://127.0.0.1:8082"))
+HUB = os.environ.get("NOVA_HUB", CFG.get("hub_url", "http://127.0.0.1:8080"))
 NODE = os.environ.get("NOVA_NODE", CFG.get("node_name") or socket.gethostname())
 TOKEN = os.environ.get("NOVA_TOKEN", CFG.get("ingest_token", ""))
 FAST = int(CFG.get("fast_interval", 5))

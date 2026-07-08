@@ -1,7 +1,7 @@
 {
   "_comment": "NOVA Glass config PÚBLICO (sin secretos). Copia a config.local.json para sobreescribir con tokens/IPs reales — ese archivo está en .gitignore.",
   "node_name": null,
-  "hub_url": "http://127.0.0.1:8082",
+  "hub_url": "http://127.0.0.1:8080",
   "ingest_token": "",
   "db_file": "nova.db",
 
