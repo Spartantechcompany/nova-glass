@@ -35,7 +35,7 @@ el navegador ni al reiniciar** — todo se guarda en SQLite (WAL).
   └─────────────────────┘  ▼
                     ┌──────────────────┐    SQLite WAL (nova.db)
                     │  nova_server.py  │◄── historial persistente
-                    │  hub :8082       │    anomalías · alertas
+                    │  hub :8080       │    anomalías · alertas
                     │  FastAPI         │──► webhooks (Telegram/genérico)
                     │  Insights (LLM)  │──► LLM factory :8003 (OpenAI-compatible)
                     └────────┬─────────┘
@@ -54,13 +54,13 @@ cp config.local.example.json config.local.json
 #   edita: ingest_token, webhooks, devices...
 
 # 2) arranca el hub (nodo central)
-python3 -m uvicorn nova_server:app --host 0.0.0.0 --port 8082
+python3 -m uvicorn nova_server:app --host 0.0.0.0 --port 8080
 
 # 3) arranca un collector en CADA nodo
-NOVA_HUB=http://<ip-del-hub>:8082 NOVA_NODE=spark01 python3 nova_collector.py
+NOVA_HUB=http://<ip-del-hub>:8080 NOVA_NODE=spark01 python3 nova_collector.py
 ```
 
-Abre **http://\<ip-del-hub\>:8082**
+Abre **http://\<ip-del-hub\>:8080** (o el puerto configurado)
 
 ### Como servicio systemd (persistente tras reboot)
 
