@@ -2,6 +2,11 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
+# System deps: ping, DNS, SNMP para NOC probes
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    iputils-ping dnsutils snmp && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
