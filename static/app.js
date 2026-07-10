@@ -232,10 +232,9 @@ $("#nmCopy").addEventListener("click",()=>{
   $("#nmCopy").textContent="Copiado ✓"; setTimeout(()=>$("#nmCopy").textContent="Copiar comando",1500);
 });
 
-/* ---------- node detail: rango 15min–2d + tooltip ---------- */
+/* ---------- node detail: sparklines por métrica + rango ---------- */
 let NODE_RANGE = +(localStorage.getItem("nova.range")||60);
 $("#rangeBar").innerHTML = RANGE_OPTS.map(([l,m])=>
-  `<span class="muted" style="margin-right:4px">Rango:</span>`.repeat(0) +
   `<button class="range-btn ${m===NODE_RANGE?'active':''}" data-m="${m}">${l}</button>`).join("");
 $("#rangeBar").addEventListener("click",e=>{
   const b=e.target.closest(".range-btn"); if(!b) return;
@@ -250,7 +249,7 @@ async function loadNodeDetail(){
   const lbl = RANGE_OPTS.find(([,m])=>m===NODE_RANGE)?.[0] || NODE_RANGE+" min";
   $("#nodeDetail").innerHTML = names.map(n=>`
     <div class="card"><h3>${esc(n)} · historial (${lbl})</h3>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))" id="nd-${cssId(n)}"></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))" id="nd-${cssId(n)}"></div>
     </div>`).join("") || `<p class="muted">Sin nodos.</p>`;
   for(const n of names){
     const wrap = $("#nd-"+cssId(n));
@@ -259,12 +258,13 @@ async function loadNodeDetail(){
                                       ["net.total.rx",SERIES.net," MB/s",null],
                                       ["gpu.util",SERIES.gpu,"%",100]]){
       const d = await api(`/api/series?node=${encodeURIComponent(n)}&metric=${metric}&mins=${NODE_RANGE}`);
+      const pts = d.points.map(p=>p.v);
+      const last = pts.length ? pts[pts.length-1] : null;
       const div=document.createElement("div"); div.className="metric-row";
-      const last = d.points.length? d.points[d.points.length-1].v : null;
       div.innerHTML=`<div class="ml"><span>${s.label} · ${metric}</span>
-        <b>${fmt(last)}${unit.trim()}</b></div><div class="chart"></div>`;
+        <b>${fmt(last)}${unit.trim()}</b></div><div class="spark"></div>`;
       wrap.appendChild(div);
-      chart(div.querySelector(".chart"), d.points, s.c, max, unit);
+      spark(div.querySelector(".spark"), pts, s.c, max);
     }
   }
 }
