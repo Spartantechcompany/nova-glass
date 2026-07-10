@@ -232,7 +232,7 @@ $("#nmCopy").addEventListener("click",()=>{
   $("#nmCopy").textContent="Copiado ✓"; setTimeout(()=>$("#nmCopy").textContent="Copiar comando",1500);
 });
 
-/* ---------- node detail: sparklines por métrica + rango ---------- */
+/* ---------- node detail: gráficas interactivas con hover tooltip + rango ---------- */
 let NODE_RANGE = +(localStorage.getItem("nova.range")||60);
 $("#rangeBar").innerHTML = RANGE_OPTS.map(([l,m])=>
   `<button class="range-btn ${m===NODE_RANGE?'active':''}" data-m="${m}">${l}</button>`).join("");
@@ -249,7 +249,7 @@ async function loadNodeDetail(){
   const lbl = RANGE_OPTS.find(([,m])=>m===NODE_RANGE)?.[0] || NODE_RANGE+" min";
   $("#nodeDetail").innerHTML = names.map(n=>`
     <div class="card"><h3>${esc(n)} · historial (${lbl})</h3>
-      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(240px,1fr))" id="nd-${cssId(n)}"></div>
+      <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr))" id="nd-${cssId(n)}"></div>
     </div>`).join("") || `<p class="muted">Sin nodos.</p>`;
   for(const n of names){
     const wrap = $("#nd-"+cssId(n));
@@ -258,13 +258,12 @@ async function loadNodeDetail(){
                                       ["net.total.rx",SERIES.net," MB/s",null],
                                       ["gpu.util",SERIES.gpu,"%",100]]){
       const d = await api(`/api/series?node=${encodeURIComponent(n)}&metric=${metric}&mins=${NODE_RANGE}`);
-      const pts = d.points.map(p=>p.v);
-      const last = pts.length ? pts[pts.length-1] : null;
       const div=document.createElement("div"); div.className="metric-row";
+      const last = d.points.length? d.points[d.points.length-1].v : null;
       div.innerHTML=`<div class="ml"><span>${s.label} · ${metric}</span>
-        <b>${fmt(last)}${unit.trim()}</b></div><div class="spark"></div>`;
+        <b>${fmt(last)}${unit.trim()}</b></div><div class="chart-sm"></div>`;
       wrap.appendChild(div);
-      spark(div.querySelector(".spark"), pts, s.c, max);
+      chart(div.querySelector(".chart-sm"), d.points, s.c, max, unit);
     }
   }
 }

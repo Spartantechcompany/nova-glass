@@ -88,7 +88,8 @@ main{padding:20px;max-width:1560px;margin:0 auto}
 .fill{height:100%;border-radius:4px;transition:width .5s ease}
 
 /* ---- interactive charts (Nodos) ---- */
-.chart{position:relative;width:100%;height:120px;margin-top:8px}
+.chart,.chart-sm{position:relative;width:100%;height:120px;margin-top:8px}
+.chart-sm{height:72px}
 .chart svg{display:block;width:100%;height:100%}
 .chart .xhair{position:absolute;top:0;bottom:0;width:1px;background:rgba(230,237,243,.35);
   pointer-events:none;display:none}
@@ -220,9 +221,7 @@ pre.cmd{background:#060a12;border:1px solid var(--line);border-radius:10px;paddi
 
   <!-- NODES detail -->
   <section class="view" id="v-nodes">
-    <div class="sec-title">Detalle por nodo
-      <span class="right muted">historial con sparklines · usa los rangos para ajustar la ventana</span>
-    </div>
+    <div class="sec-title">Detalle por nodo</div>
     <div class="range-bar" id="rangeBar"></div>
     <div id="nodeDetail" class="grid" style="grid-template-columns:1fr"></div>
   </section>
