@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: nova-glass-nova-hub:${TAG:-latest}
+    pull_policy: build
     container_name: nova-hub
     restart: always
     ports:
@@ -17,6 +18,7 @@ services:
       - ${DATA_DIR:-./data}:/app/data
     environment:
       - TZ=${TZ:-America/Mexico_City}
+      - LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:8003/v1}
     healthcheck:
       test: python3 -c "import urllib.request; exit(0 if urllib.request.urlopen('http://127.0.0.1:8080/api/health', timeout=5).status==200 else 1)"
       interval: 30s
