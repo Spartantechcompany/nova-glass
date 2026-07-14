@@ -195,7 +195,8 @@ def slow_sample():
     meta["containers"] = conts
 
     # Firmware updates disponibles (fwupd) — inventario propio, NO pentest
-    fw = sh("fwupdmgr get-updates 2>/dev/null | grep -iE 'upgrade|update' | head -20",
+    # "no available firmware updates" / "no updates available" son negativos, no listarlos como pendientes
+    fw = sh("fwupdmgr get-updates 2>/dev/null | grep -iE 'upgrade|update' | grep -viE 'no (available|updates)'",
             timeout=30)
     meta["firmware_updates"] = [l.strip() for l in fw.splitlines() if l.strip()][:15]
 
