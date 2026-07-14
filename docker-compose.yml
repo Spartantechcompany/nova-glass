@@ -15,7 +15,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ${DATA_DIR:-./data}:/app/data
+      - ${DATA_DIR:-/mnt/spark_shared/nova-glass/data}:/app/data
+      - ${CONFIG_LOCAL:-/mnt/spark_shared/nova-glass/config.local.json}:/app/config.local.json:ro
     environment:
       - TZ=${TZ:-America/Mexico_City}
       - LLM_BASE_URL=${LLM_BASE_URL:-http://host.docker.internal:8003/v1}

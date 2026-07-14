@@ -45,6 +45,12 @@ CFG = load_cfg()
 DB_PATH = os.path.join(BASE, CFG.get("db_file", "nova.db"))
 TOKEN = CFG.get("ingest_token", "")
 LLM = CFG.get("llm", {})
+if os.environ.get("LLM_BASE_URL"):
+    LLM["base_url"] = os.environ["LLM_BASE_URL"]
+if os.environ.get("LLM_API_KEY"):
+    LLM["api_key"] = os.environ["LLM_API_KEY"]
+if os.environ.get("LLM_MODEL"):
+    LLM["model"] = os.environ["LLM_MODEL"]
 THRESHOLDS = CFG.get("thresholds", {})
 WEBHOOKS = CFG.get("webhooks", [])
 DEVICES = CFG.get("devices", [])
