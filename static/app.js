@@ -16,6 +16,7 @@ const INSIGHTS = [
   {k:"performance", ico:"⚡", t:"Optimización de Rendimiento", d:"Desperdicio, saturación y acciones concretas."},
 ];
 const $ = s => document.querySelector(s);
+const $$ = s => Array.from(document.querySelectorAll(s));
 const fmt = (n,d=1)=> (n==null||isNaN(n)) ? "—" : Number(n).toFixed(d);
 const esc = s => String(s??"").replace(/[&<>"']/g, c =>
   ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -407,15 +408,33 @@ async function loadUpdates(){
 /* ---------- logs ---------- */
 async function loadLogs(){
   const data = await api("/api/logs");
+  window.__logsData = data;
   const entries = Object.entries(data);
   $("#logsWrap").innerHTML = entries.map(([node,d])=>`
     <div class="card"><h3>📜 ${esc(node)}
-      <span class="chip" style="margin-left:auto">${d.count_1h||0} errores/h · ${d.ts?when(d.ts):"—"}</span></h3>
+      <span class="chip" style="margin-left:auto">${d.count_1h||0} errores/h · ${d.ts?when(d.ts):"—"}</span>
+      <button class="btn-copy" data-node="${esc(node)}" title="Copiar logs">📋 Copiar</button></h3>
       <div class="logbox">${(d.lines||[]).map(l=>{
         const bad=/(fail|error|crit|denied|segfault)/i.test(l);
         return `<div class="${bad?'err':''}">${esc(l)}</div>`;
       }).join("")||'<span class="muted">sin errores en la última hora ✅</span>'}</div>
     </div>`).join("") || `<p class="muted">Sin logs aún — el collector los envía en el ciclo lento (cada 5 min).</p>`;
+
+  $$(".btn-copy").forEach(btn=>{
+    btn.onclick = async ()=>{
+      const node = btn.dataset.node;
+      const lines = (window.__logsData[node]?.lines||[]).join("\n");
+      try{
+        await navigator.clipboard.writeText(lines || "(sin errores en la última hora)");
+        const orig = btn.textContent;
+        btn.textContent = "✅ Copiado";
+        setTimeout(()=>{ btn.textContent = orig; }, 1500);
+      }catch(e){
+        btn.textContent = "❌ Error";
+        setTimeout(()=>{ btn.textContent = "📋 Copiar"; }, 1500);
+      }
+    };
+  });
 }
 
 /* ---------- alerts + thresholds ---------- */
